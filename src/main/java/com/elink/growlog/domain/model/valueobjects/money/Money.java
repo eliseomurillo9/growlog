@@ -1,12 +1,18 @@
-package com.elink.growlog.domain.valueobjects.money;
+package com.elink.growlog.domain.model.valueobjects.money;
 
-import com.elink.growlog.domain.valueobjects.currency.Currency;
+import com.elink.growlog.domain.model.valueobjects.currency.Currency;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.math.BigDecimal;
 
+@ValueObject
 public record Money( BigDecimal amount, Currency currency) {
    public Money{
        if (currency == null) {
+           throw new IllegalArgumentException("Currency cannot be null");
+       }
+
+       if (EnumUtils) {
            throw new IllegalArgumentException("Currency cannot be null");
        }
 
