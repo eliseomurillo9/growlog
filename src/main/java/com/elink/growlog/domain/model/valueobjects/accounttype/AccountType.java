@@ -7,5 +7,14 @@ public enum AccountType {
     SAVING,
     CRYPTO,
     LIFE_INSURANCE,
-    CHECKING_ACCOUNT
+    CHECKING_ACCOUNT;
+
+ public static AccountType from(String type) {
+        for (AccountType accountType : AccountType.values()) {
+            if (accountType.name().equalsIgnoreCase(type)) {
+                return accountType;
+            }
+        }
+        throw new IllegalArgumentException("Invalid account type: " + type);
+ };
 }

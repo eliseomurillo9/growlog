@@ -12,9 +12,6 @@ public record Money( BigDecimal amount, Currency currency) {
            throw new IllegalArgumentException("Currency cannot be null");
        }
 
-       if (EnumUtils) {
-           throw new IllegalArgumentException("Currency cannot be null");
-       }
 
         if (amount == null)  {
             amount = BigDecimal.ZERO;
