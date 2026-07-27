@@ -22,4 +22,8 @@ public record Money( BigDecimal amount, Currency currency) {
         }
 
     }
+
+    static public Money of(BigDecimal amount, Currency currency) {
+       return new Money(amount, currency);
+    }
 }
