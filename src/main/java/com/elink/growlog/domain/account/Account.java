@@ -1,6 +1,6 @@
 package com.elink.growlog.domain.account;
 
-import com.elink.growlog.domain.commands.CreateAccount;
+import com.elink.growlog.domain.account.commands.CreateAccount;
 import com.elink.growlog.domain.model.Transaction;
 import com.elink.growlog.domain.model.valueobjects.accountstatus.AccountStatus;
 import com.elink.growlog.domain.model.valueobjects.accounttype.AccountType;
