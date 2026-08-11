@@ -1,11 +1,11 @@
 package com.elink.growlog.domain.account;
 
 import com.elink.growlog.domain.account.commands.CreateAccount;
-import com.elink.growlog.domain.model.Transaction;
 import com.elink.growlog.domain.model.valueobjects.accountstatus.AccountStatus;
 import com.elink.growlog.domain.model.valueobjects.accounttype.AccountType;
 import com.elink.growlog.domain.model.valueobjects.currency.Currency;
 import com.elink.growlog.domain.model.valueobjects.money.Money;
+import com.elink.growlog.domain.transaction.Transaction;
 import com.elink.growlog.utils.Assert;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -36,7 +36,7 @@ public class Account {
 
     private List<Transaction> transactions;
 
-    private static final Pattern ACCOUNT_NAME_PATTERN = Pattern.compile("^^(?!\\s*$).{1,20}$");
+    private static final Pattern ACCOUNT_NAME_PATTERN = Pattern.compile("^(?!\\s*$).{1,20}$");
     private static final Pattern BANK_NAME_PATTERN = Pattern.compile("^(?!\\s*$).{1,30}$");
 
 
