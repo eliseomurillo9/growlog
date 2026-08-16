@@ -8,45 +8,40 @@ import com.elink.growlog.domain.transaction.commands.CreateTransaction;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class Transaction {
-
-    Currency currency;
-    LocalDate date;
-    UUID id;
-    UUID AccountId;
-    Money grossAmmount;
-    Money netAmmount;
-    Money fee;
-    TransactionType transactionType;
-
-    public Transaction(UUID id, UUID AccountId, Money grossAmmount, Money netAmmount, LocalDate date, TransactionType typeTransaction,  Currency currency,  Money fee ) {
-        this.id = id;
-        this.AccountId = AccountId;
-        this.grossAmmount = grossAmmount;
-        this.netAmmount = netAmmount;
-        this.date = date;
-        this.transactionType = typeTransaction;
-        this.currency = currency;
-        this.fee = fee;
-    }
-
-    public static Transaction atCreation (CreateTransaction command) {
+public record Transaction(
+    Currency currency,
+    LocalDate date,
+    UUID id,
+    UUID accountId,
+    Money grossAmount,
+    Money netAmount,
+    Money fee,
+    TransactionType transactionType
+) {
+    public static Transaction create(CreateTransaction command) {
 
         try {
+            /** TODO:
+             * 3. check if the transaction is valid for the account type (e.g., no withdrawals for savings accounts)
+             * 4. check if the transaction date is not in the future
+             * 5. Fee should be calculated with gross - net ammount
+             * 6. Check that the transaction is a validate enum
+             * */
+
             final var transactionCurrency = Currency.valueOf(command.currency().name());
             return new Transaction(
+                    transactionCurrency,
+                    command.date(),
                     UUID.randomUUID(),
                     command.accountId(),
                     command.grossAmmount(),
                     command.netAmmount(),
-                    command.date(),
-                    command.typeTransaction(),
-                    transactionCurrency,
-                    command.fee()
+                    command.fee(),
+                    command.typeTransaction()
             );
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid currency: " + command.currency());
         }
-
     }
+
 }

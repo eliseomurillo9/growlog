@@ -5,7 +5,8 @@ import org.jmolecules.ddd.annotation.ValueObject;
 @ValueObject
 public enum TransactionType {
     DEPOSIT,
+
     WITHDRAW,
-    PURCHASE,
+    BUY,
     SELL
 }

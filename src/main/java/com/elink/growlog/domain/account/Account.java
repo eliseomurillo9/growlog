@@ -6,6 +6,7 @@ import com.elink.growlog.domain.model.valueobjects.accounttype.AccountType;
 import com.elink.growlog.domain.model.valueobjects.currency.Currency;
 import com.elink.growlog.domain.model.valueobjects.money.Money;
 import com.elink.growlog.domain.transaction.Transaction;
+import com.elink.growlog.domain.transaction.commands.CreateTransaction;
 import com.elink.growlog.utils.Assert;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import static com.elink.growlog.domain.model.valueobjects.transationtype.TransactionType.*;
 import static java.util.Collections.emptyList;
 
 @AggregateRoot
@@ -28,7 +30,7 @@ public class Account {
 
     private Currency currency;
 
-    private final Money balance;
+    private Money balance;
 
     private AccountStatus status;
 
@@ -61,69 +63,41 @@ public class Account {
         return new Account(UUID.randomUUID(), command.name(), command.bank(), command.type(), command.currency(), Money.of(BigDecimal.ZERO, command.currency()), AccountStatus.ACTIVE, command.deactivationDate(), emptyList());
     }
 
-    public UUID getCompteId() {
-        return compteId;
+    public Account addTransaction(CreateTransaction command) {
+        validCurrency(command.currency(), this.currency);
+        activeAccount();
+        // TODO: TransactionType check
+
+        var transaction = Transaction.create(command);
+
+        recalculateBalance(transaction);
+
+        return this;
     }
 
-    public String getName() {
-        return name;
+    private void validCurrency(Currency transactionCurrency, Currency accountCurrency) {
+        if (transactionCurrency != accountCurrency) {
+            throw new IllegalArgumentException("Invalid currency: " + transactionCurrency);
+        }
     }
 
-    public String getBank() {
-        return bank;
+    private void activeAccount() {
+        if (status != AccountStatus.ACTIVE) {
+            throw new IllegalStateException("Account is not active: " + status);
+        }
     }
 
-    public AccountType getType() {
-        return type;
+    private void recalculateBalance(Transaction transaction) {
+        final var transactionType = transaction.transactionType();
+        if(transactionType.equals(DEPOSIT) || transactionType.equals(SELL)) {
+            balance = Money.of(balance.amount().add(transaction.netAmount().amount()), balance.currency());
+        }
+
+        if(transactionType.equals(WITHDRAW) || transactionType.equals(BUY)) {
+            if (balance.amount().compareTo(transaction.netAmount().amount()) < 0) {
+                throw new IllegalArgumentException("Insufficient balance for transaction: " + transaction.id());
+            }
+            balance = Money.of(balance.amount().subtract(transaction.netAmount().amount()), balance.currency());
+        }
     }
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    public Money getBalance() {
-        return balance;
-    }
-
-    public AccountStatus getStatus() {
-        return status;
-    }
-
-    public LocalDate getDeactivationDate() {
-        return deactivationDate;
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
-
-    public void setType(AccountType type) {
-        this.type = type;
-    }
-
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
-    }
-
-    public void setStatus(AccountStatus status) {
-        this.status = status;
-    }
-
-    public void setDeactivationDate(LocalDate deactivationDate) {
-        this.deactivationDate = deactivationDate;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
-
 }
